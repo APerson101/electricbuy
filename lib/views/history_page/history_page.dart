@@ -8,6 +8,7 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
+    print('rebuilding again...crying');
     return Container(
       child: Center(
         child: Text('History'),

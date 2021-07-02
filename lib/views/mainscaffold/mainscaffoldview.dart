@@ -82,7 +82,8 @@ class MainScaffoldView extends WidgetView<MainScaffold, MainScaffoldState> {
       index: state.pages.indexOf(currentPage),
       children: <Widget>[
         /// DASHBOARD PAGE
-        DashboardPage(),
+        DashboardPage().padding(
+            left: leftContentOffset + Insets.mGutter, right: Insets.mGutter),
 
         /// HISTORY PAGE
         ValueListenableBuilder<List<HistoryData>>(

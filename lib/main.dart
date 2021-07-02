@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:universal_platform/universal_platform.dart';
 
+import 'GetBinding.dart';
 import '_internal/components/no_glow_scroll_behavior.dart';
 import 'globals.dart';
 import 'models/app_model.dart';
@@ -73,7 +75,8 @@ class _MyAppState extends State<MyApp> {
 
     return Provider.value(
       value: theme, // Provide the current theme to the entire app
-      child: MaterialApp(
+      child: GetMaterialApp(
+        initialBinding: GetBinding(),
         title: "Buy Electricity",
         debugShowCheckedModeBanner: false,
         navigatorKey: AppGlobals.rootNavKey,

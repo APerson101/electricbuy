@@ -1,9 +1,13 @@
 import 'package:electricbuy/_internal/components/scrolling_flex_view.dart';
 import 'package:electricbuy/purchase_bloc/bloc/purchase_bloc.dart';
 import 'package:electricbuy/styled_components/styled_dialogs.dart';
+import 'package:electricbuy/views/dashboardpage/dashboardController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:get/get.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:getwidget/getwidget.dart';
 
 import '../../globals.dart';
 import '../../styles.dart';
@@ -18,11 +22,58 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final _formKey = GlobalKey<FormBuilderState>();
   NavigatorState get rootNav => AppGlobals.nav;
+  DashboardController controller = Get.find();
   @override
   Widget build(BuildContext context) {
+    print('rebuilding');
     return Container(
         child: ConstrainedFlexView(850,
-            scrollPadding: EdgeInsets.only(right: Insets.m), child: form()));
+            scrollPadding: EdgeInsets.only(right: Insets.m),
+            child: Center(child: Obx(() {
+      switch (controller.currentState.value) {
+        case viewState.dashboard:
+          return gridItems();
+          break;
+        case viewState.loading:
+          return CircularProgressIndicator();
+        case viewState.powerForm:
+          return form();
+
+        default:
+          return Container();
+      }
+    }))));
+  }
+
+  gridItems() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+                child: ElevatedButton(
+                    onPressed: () {
+                      //show form
+                      controller.currentState.value = viewState.powerForm;
+                    },
+                    child: Text("Buy Power"))),
+            Expanded(
+                child:
+                    ElevatedButton(onPressed: () {}, child: Text("Buy Data")))
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+                child: ElevatedButton(
+                    onPressed: () {}, child: Text("Subscribe Cable TV"))),
+            Expanded(
+                child: ElevatedButton(
+                    onPressed: () {}, child: Text("Buy Airtime")))
+          ],
+        ),
+      ],
+    );
   }
 
   form() {
@@ -36,67 +87,107 @@ class _DashboardPageState extends State<DashboardPage> {
             style: TextStyles.CalloutFocus.bold.size(24),
             textAlign: TextAlign.center,
           ),
+          GFDropdown(
+              items: states(),
+              onChanged: (value) => controller.state.value = value),
           FormBuilderTextField(
-              name: 'Phone',
-              decoration: InputDecoration(labelText: 'Enter Phone Number'),
-              validator: FormBuilderValidators.required(context),
-              keyboardType: TextInputType.number),
-          FormBuilderTextField(
-              name: 'Meter',
-              decoration: InputDecoration(labelText: 'Enter Meter Number'),
-              validator: FormBuilderValidators.required(context),
-              keyboardType: TextInputType.number),
+            name: 'Meter',
+            decoration: InputDecoration(labelText: 'Enter Meter Number'),
+            validator: FormBuilderValidators.required(context),
+            keyboardType: TextInputType.number,
+            onChanged: (value) => controller.meter_number.value = value,
+          ),
           FormBuilderTextField(
               name: 'Amount',
               decoration: InputDecoration(labelText: 'Enter Amount to buy'),
               validator: FormBuilderValidators.required(context),
-              keyboardType: TextInputType.number),
+              keyboardType: TextInputType.number,
+              onChanged: (value) => controller.amount.value = value),
           ElevatedButton(
               onPressed: () async {
-                _formKey.currentState.save();
-                if (_formKey.currentState.validate()) {
-                  print(_formKey.currentState.value);
-                  await Dialogs.show(OkCancelDialog(
-                    title: "Confirm Purchase",
-                    message: "Are you sure you want to make this purchase",
-                    onOkPressed: () {
-                      rootNav.pop<bool>(true);
-                      submit(_formKey.currentState.value);
-                    },
-                    onCancelPressed: () => rootNav.pop<bool>(false),
-                  ));
-                }
+                var response = await controller.verifyMeter();
+                showMessage(response);
               },
-              child: Text('Submit'))
+              child: Text('Buy'))
         ],
       ),
     );
   }
 
-  submit(Map<String, dynamic> values) {
-    //validate with the api
-    rootNav.push(MaterialPageRoute(builder: (BuildContext context) {
-      return Purchase();
-    }));
+  states() {
+    return [
+      'FCT',
+      'Kogi',
+      'Nasarawa',
+      'Niger',
+      'Kaduna',
+      'Kebbi',
+      'Sokoto',
+      'zamfara',
+      'Kano',
+      'Katsina',
+      'Jigawa',
+      'Bauchi',
+      'Benue',
+      'Gombe',
+      'Plateau',
+      'Abia',
+      'Enugu',
+      'Imo',
+      'Ebonyi',
+      'Anambra',
+      'Akwa Ibom',
+      'Bayelsa',
+      'Rivers',
+      'Cross Rivers',
+      'Oyo',
+      'Osun',
+      "Lagos",
+      "Ogun"
+    ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList();
   }
-}
 
-class Purchase extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(create: (_) {
-      var it = PurchaseBloc();
-      it.add(InitializePurchase());
-      return it;
-    }, child: BlocBuilder(builder: (context, state) {
-      if (state is PurchaseSucessful) {
-        //display code, text it to them and then save to database
+  showMessage(bool status) {
+    if (status) {
+      Get.defaultDialog(
+          title: "Confirm purchase",
+          onCancel: () => Get.back(),
+          onConfirm: () async {
+            Get.back();
+            var value = await controller.confirmPurchase();
+            if (value) {
+              Get.snackbar('success', 'Credit purchase successfully');
 
-      }
-      if (state is PurchaseFail) {
-        //ask them to check the credentials of what they entered
-      }
-      return CircularProgressIndicator();
-    }));
+              //show the thing...
+            } else
+              showFailedDialog();
+          },
+          content: Container(
+            child: SizedBox(
+              width: 250,
+              height: 250,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("confirm purchase of Power"),
+                    Text("to"),
+                    Text("${controller.meter_name.value}"),
+                    Text("amount in Naira: ${controller.amount}"),
+                  ]),
+            ),
+          ));
+    } else {
+      Get.defaultDialog(
+          title: "Invalid Meter Number",
+          content: Text("You entered an Invalid meter number"),
+          onConfirm: () => Get.back(),
+          onCancel: () => Get.back());
+    }
+  }
+
+  showFailedDialog() {
+    Get.defaultDialog(
+        title: "Info", content: Text(controller.errorMessage.value));
   }
 }
