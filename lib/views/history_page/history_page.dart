@@ -10,8 +10,12 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     print('rebuilding again...crying');
     return Container(
-      child: Center(
-        child: Text('History'),
+      child: Stack(
+        children: [
+          Image.network(
+              "https://i.pinimg.com/originals/b7/cd/5f/b7cd5f4b3eb91bc06ac4f790f019b323.jpg"),
+          Text('History')
+        ],
       ),
     );
   }

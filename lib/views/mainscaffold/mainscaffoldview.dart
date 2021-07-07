@@ -4,6 +4,8 @@ import 'package:electricbuy/models/app_model.dart';
 import 'package:electricbuy/models/history_model.dart';
 import 'package:electricbuy/styled_components/electricbuy_logo.dart';
 import 'package:electricbuy/styled_components/styled_container.dart';
+import 'package:electricbuy/views/aboutus.dart';
+import 'package:electricbuy/views/contactus.dart';
 import 'package:electricbuy/views/dashboardpage/dashboardpage.dart';
 import 'package:electricbuy/views/history_page/history_page.dart';
 import 'package:electricbuy/views/mainscaffold/mainscaffold.dart';
@@ -94,6 +96,10 @@ class MainScaffoldView extends WidgetView<MainScaffold, MainScaffoldState> {
                 .padding(left: Insets.lGutter, right: Insets.mGutter);
           },
         ),
+        AboutUS().padding(
+            left: leftContentOffset + Insets.mGutter, right: Insets.mGutter),
+        ContactUS().padding(
+            left: leftContentOffset + Insets.mGutter, right: Insets.mGutter),
       ],
     );
     //contentStack = RepaintBoundary(child: contentStack);
@@ -111,6 +117,21 @@ class MainScaffoldView extends WidgetView<MainScaffold, MainScaffoldState> {
           children: [
             Stack(
               children: [
+                Stack(
+                  children: [
+                    SizedBox(
+                      height: topBarHeight,
+                      child: Container(
+                          child: Center(
+                        child: Row(children: [
+                          Text("Alameen or something idk"),
+                          Text("16/eng02/419")
+                        ]),
+                        // color: Colors.green,
+                      )),
+                    )
+                  ],
+                ).positioned(height: topBarHeight + topBarPadding),
                 contentStack.padding(top: topBarHeight + topBarPadding),
                 IconButton(
                         icon: Icon(Icons.menu, size: 24, color: theme.accent1),
@@ -119,8 +140,8 @@ class MainScaffoldView extends WidgetView<MainScaffold, MainScaffoldState> {
                     .positioned(left: Insets.m, top: Insets.m),
                 if (isNarrow)
                   ElectricbuyLogo(40, theme.accent1)
-                      .alignment(Alignment.topCenter)
-                      .padding(top: Insets.l),
+                      .alignment(Alignment.topCenter),
+                // .padding(top: Insets.l),
                 MainSideMenu(
                   onPageSelected: state.trySetCurrentPage,
                   skinnyMode: skinnyMenuMode,

@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 import 'mainscaffoldview.dart';
 
-enum PageType { None, Dashboard, History }
+enum PageType { None, Dashboard, History, AboutuS, ContactuS }
 
 class MainScaffold extends StatefulWidget {
   static GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
@@ -21,6 +21,8 @@ class MainScaffoldState extends State<MainScaffold> {
   List<PageType> pages = [
     PageType.Dashboard,
     PageType.History,
+    PageType.ContactuS,
+    PageType.AboutuS,
   ];
   SimpleValueNotifier<List<HistoryData>> checkedContactsNotifier =
       SimpleValueNotifier([]);

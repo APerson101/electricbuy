@@ -150,13 +150,33 @@ class _MainSideMenuState extends State<MainSideMenu> {
                             /// Contacts Out Btn
                             MainMenuBtn(
                               StyledIcons.user,
-                              "HISTORY",
+                              "PAYMENT HISTORY",
                               compact: widget.skinnyMode,
                               pageType: PageType.History,
                               height: _btnHeight,
                               isSelected: currentPage == PageType.History,
                               onPressed: () =>
                                   _handlePageSelected(PageType.History),
+                            ),
+                            MainMenuBtn(
+                              StyledIcons.address,
+                              "CONTACT US",
+                              compact: widget.skinnyMode,
+                              pageType: PageType.ContactuS,
+                              height: _btnHeight,
+                              isSelected: currentPage == PageType.ContactuS,
+                              onPressed: () =>
+                                  _handlePageSelected(PageType.ContactuS),
+                            ),
+                            MainMenuBtn(
+                              StyledIcons.link,
+                              "ABOUT US",
+                              compact: widget.skinnyMode,
+                              pageType: PageType.AboutuS,
+                              height: _btnHeight,
+                              isSelected: currentPage == PageType.AboutuS,
+                              onPressed: () =>
+                                  _handlePageSelected(PageType.AboutuS),
                             ),
 
                             Spacer(),

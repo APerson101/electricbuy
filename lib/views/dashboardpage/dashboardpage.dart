@@ -32,7 +32,7 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Center(child: Obx(() {
       switch (controller.currentState.value) {
         case viewState.dashboard:
-          return gridItems();
+          return form();
           break;
         case viewState.loading:
           return CircularProgressIndicator();
@@ -77,40 +77,75 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   form() {
-    return FormBuilder(
-      key: _formKey,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      child: Column(
-        children: [
-          Text(
-            "Buy Your Electricity Here!",
-            style: TextStyles.CalloutFocus.bold.size(24),
-            textAlign: TextAlign.center,
+    return Stack(
+      children: [
+        // Image.asset('assets/images/bckg.png'),
+        SizedBox(
+            width: context.width,
+            height: context.height,
+            child: Image.network(
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcfTMf8IDP92yFSdI6RvX0a68HAX5NChSwjb1tkARtw-xQ1enwTX2DEvKDFynsbJYGYno&usqp=CAU",
+                fit: BoxFit.fill)), // (
+        //   "https://image.freepik.com/free-photo/conceptual-image-glowing-energy-saving-bulb-old-dark-bulbs-wires-green-background_454047-1945.jpg",
+        //   fit: BoxFit.fill,
+        // ),
+        FormBuilder(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Buy  Electricity from the comfort fo your home!!",
+                style: TextStyles.CalloutFocus.bold.size(40),
+                textAlign: TextAlign.center,
+              ),
+              GFDropdown(
+                  hint: Text("Select State"),
+                  items: states(),
+                  onChanged: (value) => controller.state.value = value),
+              Container(
+                  width: 500,
+                  child: FormBuilderTextField(
+                    name: 'Meter',
+                    decoration:
+                        InputDecoration(labelText: 'Enter Meter Number'),
+                    validator: FormBuilderValidators.required(context),
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) => controller.meter_number.value = value,
+                  )),
+              Container(
+                width: 500,
+                child: FormBuilderTextField(
+                    name: 'Amount',
+                    decoration:
+                        InputDecoration(labelText: 'Enter Amount to buy'),
+                    validator: FormBuilderValidators.required(context),
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) => controller.amount.value = value),
+              ),
+              Container(
+                width: 500,
+                height: 75,
+                child: ElevatedButton(
+                    onPressed: () async {
+                      var response = await controller.verifyMeter();
+                      showMessage(response);
+                    },
+                    child: Text(
+                      'Buy',
+                      style: TextStyles.CalloutFocus.bold.size(30),
+                    )),
+              ),
+              Text(
+                "Need help? Call 07039365403",
+                style: TextStyles.CalloutFocus.bold.size(20),
+              )
+            ],
           ),
-          GFDropdown(
-              items: states(),
-              onChanged: (value) => controller.state.value = value),
-          FormBuilderTextField(
-            name: 'Meter',
-            decoration: InputDecoration(labelText: 'Enter Meter Number'),
-            validator: FormBuilderValidators.required(context),
-            keyboardType: TextInputType.number,
-            onChanged: (value) => controller.meter_number.value = value,
-          ),
-          FormBuilderTextField(
-              name: 'Amount',
-              decoration: InputDecoration(labelText: 'Enter Amount to buy'),
-              validator: FormBuilderValidators.required(context),
-              keyboardType: TextInputType.number,
-              onChanged: (value) => controller.amount.value = value),
-          ElevatedButton(
-              onPressed: () async {
-                var response = await controller.verifyMeter();
-                showMessage(response);
-              },
-              child: Text('Buy'))
-        ],
-      ),
+        ),
+      ],
     );
   }
 
